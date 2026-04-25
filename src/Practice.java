@@ -1,5 +1,10 @@
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 public class Practice {
@@ -25,7 +30,33 @@ public class Practice {
    * @return the number of vertices with odd values reachable from the starting vertex
    */
   public static int oddVertices(Vertex<Integer> starting) {
-    return 0;
+    if(starting == null){
+      return 0;
+    }
+
+    Set<Vertex<Integer>> visited = new HashSet<>();
+    return oddVertices(starting, visited);
+  }
+
+  private static int oddVertices(Vertex<Integer> starting, Set<Vertex<Integer>> visited){
+    if(visited.contains(starting)){
+      return 0;
+    }
+
+    int count = 0;
+
+    visited.add(starting);
+
+    if(starting.data % 2 != 0){
+      count++;
+    }
+
+    for(Vertex<Integer> neighbor : starting.neighbors){
+      count += oddVertices(neighbor, visited);
+    }
+
+    return count;
+
   }
 
   /**
@@ -46,9 +77,38 @@ public class Practice {
    * @param starting the starting vertex (may be null)
    * @return a sorted list of all reachable vertex values by 
    */
-  public static List<Integer> sortedReachable(Vertex<Integer> starting) {
-    return null;
-  }
+public static List<Integer> sortedReachable(Vertex<Integer> starting) {
+        List<Integer> sortedList = new ArrayList<>();
+        
+        if (starting == null) {
+            return sortedList;
+        }
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        Set<Vertex<Integer>> visited = new HashSet<>();
+        Queue<Vertex<Integer>> traversalQueue = new LinkedList<>();
+
+        traversalQueue.add(starting);
+        visited.add(starting);
+
+        while (!traversalQueue.isEmpty()) {
+            Vertex<Integer> current = traversalQueue.poll();
+            pq.add(current.data); 
+
+            for (Vertex<Integer> neighbor : current.neighbors) {
+                if (neighbor != null && !visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    traversalQueue.add(neighbor);
+                }
+            }
+        }
+
+        while (!pq.isEmpty()) {
+            sortedList.add(pq.poll());
+        }
+
+        return sortedList;
+    }
 
   /**
    * Returns a sorted list of all values reachable from the given starting vertex in the provided graph.
@@ -61,7 +121,37 @@ public class Practice {
    * @return a sorted list of all reachable vertex values
    */
   public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting) {
-    return null;
+      List<Integer> sortedList = new ArrayList<>();
+        if(!graph.containsKey(starting)){
+            return sortedList;
+        }
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        Set<Integer> visited = new HashSet<>();
+        Queue<Integer> traversalQueue = new LinkedList<>();
+
+        traversalQueue.add(starting);
+
+        while(!traversalQueue.isEmpty()){
+          int current = traversalQueue.poll();
+          if(visited.contains(current)){
+            continue;
+          }
+
+          visited.add(current);
+          pq.add(current);
+          for(int neighbor : graph.get(current)){
+            traversalQueue.add(neighbor);
+          }
+        }
+
+        while(!pq.isEmpty()){
+          sortedList.add(pq.poll());
+        }
+
+        return sortedList;
+
+
   }
 
   /**
@@ -79,7 +169,57 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
+    boolean oneWay = false;
+    boolean twoWay = false;
+    if(v1 == v2){
+      return true;
+    }
+
+    Queue<Vertex<T>> queue = new LinkedList<>();
+    Set<Vertex<T>> visited = new HashSet<>();
+
+    queue.add(v1);
+    while(!queue.isEmpty()){
+      Vertex<T> current = queue.poll();
+      if(visited.contains(current)){
+        continue;
+      }
+
+      visited.add(current);
+
+      if(current == v2){
+        oneWay = true;
+        break;
+      }
+
+      for(Vertex<T> neighbor : current.neighbors){
+        queue.add(neighbor);
+      }
+    }
+
+    queue.add(v2);
+
+    while(!queue.isEmpty()){
+      Vertex<T> current = queue.poll();
+      if(visited.contains(current)){
+        continue;
+      }
+
+      visited.add(current);
+
+      if(current == v1){
+        return true && oneWay;
+      }
+
+      for(Vertex<T> neighbor : current.neighbors){
+        queue.add(neighbor);
+      }
+    }
+
     return false;
+    }
+
+
   }
 
   /**
