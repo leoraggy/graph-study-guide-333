@@ -169,6 +169,9 @@ public static List<Integer> sortedReachable(Vertex<Integer> starting) {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
+    if(v1 == null || v2 == null){
+      return false;
+    }
     boolean oneWay = false;
     boolean twoWay = false;
     if(v1 == v2){
@@ -281,6 +284,36 @@ public static List<Integer> sortedReachable(Vertex<Integer> starting) {
    * @return true if a person in the extended network works at the specified company, false otherwise
    */
   public static boolean hasExtendedConnectionAtCompany(Professional person, String companyName) {
+    if(person == null){
+      return false;
+    }
+    if (person.getCompany().equals(companyName)){
+      return true;
+    }
+
+    Queue<Professional> toVisit = new LinkedList<>();
+
+    Set<Professional> visited = new HashSet<>();
+
+    toVisit.add(person);
+
+    while(!toVisit.isEmpty()){
+      Professional current = toVisit.poll();
+      if(visited.contains(current)){
+        continue;
+      }
+
+      visited.add(current);
+
+      if(current.getCompany().equals(companyName)){
+        return true;
+      }
+
+      for (Professional connection : person.getConnections()) {
+          toVisit.add(connection);
+      }
+    }
+
     return false;
   }
 
@@ -352,6 +385,20 @@ public static List<Integer> sortedReachable(Vertex<Integer> starting) {
    * @return an unsorted list of next moves
    */
   public static List<int[]> nextMoves(char[][] board, int[] current, int[][] directions) {
-    return null;
+    
+    List<int[]> validMoves = new ArrayList<>();
+    int width = board.length;
+    int height = board[0].length;
+
+    for(int[] direction : directions){
+      int row = current[0] + direction[0];
+      int col = current[1] + direction[1];
+
+      if(row >= 0 && col >= 0 && row < width && col < height && board[row][col] != 'X'){
+        validMoves.add(new int[]{row, col});
+      }
+    }
+
+    return validMoves;
   }
 }
