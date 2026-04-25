@@ -219,9 +219,6 @@ public static List<Integer> sortedReachable(Vertex<Integer> starting) {
     return false;
     }
 
-
-  }
-
   /**
    * Returns whether there exists a path from the starting to ending vertex that includes only positive values.
    * 
@@ -235,7 +232,43 @@ public static List<Integer> sortedReachable(Vertex<Integer> starting) {
    * @return whether there exists a valid positive path from starting to ending
    */
   public static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int starting, int ending) {
+    if(starting < 0 || ending < 0 || !graph.containsKey(starting) || !graph.containsKey(ending)){
+      return false;
+    }
+
+    if(starting == ending){
+      return true;
+    }
+
+    Queue<Integer> queue = new LinkedList<>();
+    Set<Integer> visited = new HashSet<>();
+
+    queue.add(starting);
+
+    while(!queue.isEmpty()){
+      int current = queue.poll();
+      if(visited.contains(current)){
+        continue;
+      }
+
+      visited.add(current);
+
+      if(current < 0){
+        continue;
+      }
+
+      if(current == ending){
+        return true;
+      }
+
+      for(int neighbor : graph.get(current)){
+        queue.add(neighbor);
+      }
+
+    }
+
     return false;
+
   }
 
   /**
