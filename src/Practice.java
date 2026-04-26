@@ -172,55 +172,38 @@ public static List<Integer> sortedReachable(Vertex<Integer> starting) {
     if(v1 == null || v2 == null){
       return false;
     }
-    boolean oneWay = false;
-    boolean twoWay = false;
     if(v1 == v2){
       return true;
     }
 
+    return twoWayBFS(v1, v2) && twoWayBFS(v2, v1);
+
+
+    }
+
+    private static <T> boolean twoWayBFS(Vertex<T> start, Vertex<T> target) {
     Queue<Vertex<T>> queue = new LinkedList<>();
     Set<Vertex<T>> visited = new HashSet<>();
 
-    queue.add(v1);
-    while(!queue.isEmpty()){
-      Vertex<T> current = queue.poll();
-      if(visited.contains(current)){
-        continue;
-      }
+    queue.add(start);
+    visited.add(start);
 
-      visited.add(current);
+    while (!queue.isEmpty()) {
+        Vertex<T> current = queue.poll();
 
-      if(current == v2){
-        oneWay = true;
-        break;
-      }
+        if (current.equals(target)) {
+            return true;
+        }
 
-      for(Vertex<T> neighbor : current.neighbors){
-        queue.add(neighbor);
-      }
+        for (Vertex<T> neighbor : current.neighbors) {
+            if (!visited.contains(neighbor)) {
+                visited.add(neighbor);
+                queue.add(neighbor);
+            }
+        }
     }
-
-    queue.add(v2);
-
-    while(!queue.isEmpty()){
-      Vertex<T> current = queue.poll();
-      if(visited.contains(current)){
-        continue;
-      }
-
-      visited.add(current);
-
-      if(current == v1){
-        return true && oneWay;
-      }
-
-      for(Vertex<T> neighbor : current.neighbors){
-        queue.add(neighbor);
-      }
-    }
-
     return false;
-    }
+}
 
   /**
    * Returns whether there exists a path from the starting to ending vertex that includes only positive values.
@@ -309,7 +292,7 @@ public static List<Integer> sortedReachable(Vertex<Integer> starting) {
         return true;
       }
 
-      for (Professional connection : person.getConnections()) {
+      for (Professional connection : current.getConnections()) {
           toVisit.add(connection);
       }
     }
